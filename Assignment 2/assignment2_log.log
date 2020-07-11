@@ -1,0 +1,211 @@
+---------------------------------------------------------------------------------------
+      name:  <unnamed>
+       log:  /Users/nabibahmed/Desktop/ECON1016/Assignment 2/assignment2_log.log
+  log type:  text
+ opened on:  10 Jul 2020, 23:15:40
+
+. 
+. * Import Data
+. use marcps_w.dta, clear
+
+. 
+. * Install binscatter command
+. ssc install binscatter
+checking binscatter consistency and verifying not already installed...
+all files already exist and are up to date.
+
+. 
+. * Adjusting the variables to reflect work year, not survey year
+. replace year = year -1
+(910,367 real changes made)
+
+. 
+. * Limit analysis to age group 21-39
+. keep if age>=21 & age<=39
+(499,795 observations deleted)
+
+. 
+. * New variable for log(weekly earnings)
+. generate lnwkwage=log(wsal_val/wkswork)
+(77,166 missing values generated)
+
+. 
+. 
+. * Question 1b
+. * Figure 1
+. binscatter wkswork year if inrange(year, 86, 96), by(disabl1) linetype(connect) title
+> ("Figure 1: Weeks Worked by Disability Status") xtitle("Year") ytitle("Weeks Worked")
+>  legend(rows(1) order(1 “Non-disabled” 2 “Disabled”) label(1 "Non-Disabled") label(2 
+> "Disabled")) xline(91)
+“Non-disabled” not an integer, option order() ignored
+
+. graph export fig1.png, replace
+(file /Users/nabibahmed/Desktop/ECON1016/Assignment 2/fig1.png written in PNG format)
+
+. 
+. * Figure 2
+. binscatter lnwkwage year if inrange(year, 86, 96), by(disabl1) linetype(connect) titl
+> e("Figure 2: log(Weekly Earnings) by Disability Status") xtitle("Year") ytitle("log(W
+> eekly Earnings)") legend(rows(1) order(1 “Non-disabled” 2 “Disabled”) label(1 "Non-Di
+> sabled") label(2 "Disabled")) xline(91)
+“Non-disabled” not an integer, option order() ignored
+
+. graph export fig2.png, replace
+(file /Users/nabibahmed/Desktop/ECON1016/Assignment 2/fig2.png written in PNG format)
+
+. 
+. 
+. * Question 2
+. * Generating the relevant variables
+. generate post92 = (year >= 92)
+
+. generate disabl1_post92 = disabl1*post92
+
+. 
+. * Regression A
+. regress wkswork disabl1 post92 disabl1_post92, robust
+
+Linear regression                               Number of obs     =    410,572
+                                                F(3, 410568)      =    5667.88
+                                                Prob > F          =     0.0000
+                                                R-squared         =     0.0492
+                                                Root MSE          =       19.3
+
+--------------------------------------------------------------------------------
+               |               Robust
+       wkswork |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+---------------+----------------------------------------------------------------
+       disabl1 |  -20.19257   .2324933   -86.85   0.000    -20.64825   -19.73689
+        post92 |  -.0656345   .0614244    -1.07   0.285    -.1860244    .0547554
+disabl1_post92 |   -2.49399    .329498    -7.57   0.000    -3.139796   -1.848184
+         _cons |   39.80184   .0416529   955.56   0.000      39.7202    39.88347
+--------------------------------------------------------------------------------
+
+. 
+. * Regression B
+. regress lnwkwage disabl1 post92 disabl1_post92, robust
+
+Linear regression                               Number of obs     =    333,406
+                                                F(3, 333402)      =    1412.40
+                                                Prob > F          =     0.0000
+                                                R-squared         =     0.0159
+                                                Root MSE          =      .8277
+
+--------------------------------------------------------------------------------
+               |               Robust
+      lnwkwage |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+---------------+----------------------------------------------------------------
+       disabl1 |  -.4702201   .0162366   -28.96   0.000    -.5020434   -.4383969
+        post92 |    .147005   .0028853    50.95   0.000     .1413498    .1526602
+disabl1_post92 |  -.0091121   .0236234    -0.39   0.700    -.0554133    .0371891
+         _cons |   5.720342    .001958  2921.59   0.000     5.716505     5.72418
+--------------------------------------------------------------------------------
+
+. 
+. 
+. * Question 3
+. * Install coefplot
+. ssc instal coefplot
+checking coefplot consistency and verifying not already installed...
+all files already exist and are up to date.
+
+. 
+. * Part A
+. * Generate the relevant variables
+. generate y88 = (year == 88)
+
+. generate y89 = (year == 89)
+
+. generate y90 = (year == 90)
+
+. generate y91 = (year == 91)
+
+. generate y92 = (year == 92)
+
+. generate y93 = (year == 93)
+
+. generate y94 = (year == 94)
+
+. generate y95 = (year == 95)
+
+. generate y96 = (year == 96)
+
+. 
+. generate disabl1_y88 = disabl1*y88
+
+. generate disabl1_y89 = disabl1*y89
+
+. generate disabl1_y90 = disabl1*y90
+
+. generate disabl1_y91 = disabl1*y91
+
+. generate disabl1_y92 = disabl1*y92
+
+. generate disabl1_y93 = disabl1*y93
+
+. generate disabl1_y94 = disabl1*y94
+
+. generate disabl1_y95 = disabl1*y95
+
+. generate disabl1_y96 = disabl1*y96
+
+. 
+. regress wkswork disabl1 y88 y89 y90 y91 y92 y93 y94 y95 y96 disabl1_y88 disabl1_y89 d
+> isabl1_y90 disabl1_y91 disabl1_y92 disabl1_y93 disabl1_y94 disabl1_y95 disabl1_y96, r
+> obust
+
+Linear regression                               Number of obs     =    410,572
+                                                F(19, 410552)     =     907.84
+                                                Prob > F          =     0.0000
+                                                R-squared         =     0.0497
+                                                Root MSE          =     19.296
+
+------------------------------------------------------------------------------
+             |               Robust
+     wkswork |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+     disabl1 |  -19.69036   .5152861   -38.21   0.000     -20.7003   -18.68041
+         y88 |   .5023846    .132676     3.79   0.000     .2423436    .7624256
+         y89 |   .3703711   .1301568     2.85   0.004     .1152678    .6254745
+         y90 |   .0180991    .131201     0.14   0.890    -.2390508    .2752491
+         y91 |  -.3746421   .1322421    -2.83   0.005    -.6338327   -.1154515
+         y92 |  -.4946092   .1339358    -3.69   0.000    -.7571194    -.232099
+         y93 |  -.3940256   .1358811    -2.90   0.004    -.6603484   -.1277028
+         y94 |   .0851376   .1355252     0.63   0.530    -.1804877    .3507628
+         y95 |   .4158822   .1410101     2.95   0.003     .1395067    .6922577
+         y96 |   .7642089    .140064     5.46   0.000     .4896878     1.03873
+ disabl1_y88 |  -1.122271   .7474665    -1.50   0.133    -2.587283    .3427406
+ disabl1_y89 |   .7766638   .7411266     1.05   0.295    -.6759219    2.229249
+ disabl1_y90 |  -1.069676   .7216558    -1.48   0.138      -2.4841    .3447474
+ disabl1_y91 |  -1.040961   .7216694    -1.44   0.149    -2.455412    .3734888
+ disabl1_y92 |   -1.39992   .7121371    -1.97   0.049    -2.795687   -.0041524
+ disabl1_y93 |  -2.622487   .7194216    -3.65   0.000    -4.032532   -1.212443
+ disabl1_y94 |  -3.804497   .7236397    -5.26   0.000    -5.222809   -2.386185
+ disabl1_y95 |  -3.319968   .7631029    -4.35   0.000    -4.815627    -1.82431
+ disabl1_y96 |  -4.227817   .7585819    -5.57   0.000    -5.714614   -2.741019
+       _cons |   39.70219   .0928464   427.61   0.000     39.52021    39.88416
+------------------------------------------------------------------------------
+
+. 
+. * Part B
+. coefplot, recast(connected) ciopts(recast(rline) lpattern(dash)) vertical /// 
+> keep(disabl1_y*) xline(4.5) yline(0) ///
+> coeflabel(disabl1_y88 = "1988" disabl1_y89 = "1989" ///
+> disabl1_y90 = "1990" disabl1_y91 = "1991" disabl1_y92 = "1992" /// 
+> disabl1_y93 = "1993" disabl1_y94 = "1994" disabl1_y95 = "1995" /// 
+> disabl1_y96 = "1996") xtitle(Year) ///
+> ytitle("Coefficient and 95% CI") ///
+> title("Figure 3: Weeks Worked by Disabled vs. Non-disabled by Year")
+
+. graph export "fig3.png", replace
+(file /Users/nabibahmed/Desktop/ECON1016/Assignment 2/fig3.png written in PNG format)
+
+. 
+. 
+. *Close log file
+. log close
+      name:  <unnamed>
+       log:  /Users/nabibahmed/Desktop/ECON1016/Assignment 2/assignment2_log.log
+  log type:  text
+ closed on:  10 Jul 2020, 23:15:47
+---------------------------------------------------------------------------------------
